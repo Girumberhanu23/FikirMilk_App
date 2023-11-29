@@ -80,6 +80,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     listener: (context, state) {
                       isLoading = false;
                       if (state is SignUpLoading) {
+                        const Center(child: CircularProgressIndicator());
                         isLoading = true;
                       } else if (state is SignUpSuccess) {
                         isLoading = false;

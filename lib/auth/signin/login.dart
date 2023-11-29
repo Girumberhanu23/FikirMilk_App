@@ -1,12 +1,12 @@
 import 'package:fikir_milk/auth/signin/bloc/login_bloc.dart';
 import 'package:fikir_milk/auth/signin/data/loginModel.dart';
 import 'package:fikir_milk/const.dart';
+import 'package:fikir_milk/homeScreen/tabs/home.dart';
 import 'package:fikir_milk/sp_services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../signup/signup.dart';
 import '../widgets/textfield.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -81,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   listener: (context, state) {
                     if (state is LoginLoading) {
+                      const Center(child: CircularProgressIndicator());
                       isLoading = true;
                     } else if (state is LoginSuccess) {
                       isLoading = false;
@@ -88,7 +89,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpScreen()),
+                              builder: (context) =>
+                                  HomeScreen(selectedIndex: 0)),
                           (route) => false);
                     } else if (state is LoginFailure) {
                       isLoading = false;
@@ -194,7 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SignUpScreen()));
+                                builder: (context) =>
+                                    HomeScreen(selectedIndex: 0)));
                       },
                     style: TextStyle(
                         fontSize: 22,
@@ -269,7 +272,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SignUpScreen()));
+                                    builder: (context) =>
+                                        HomeScreen(selectedIndex: 0)));
                           },
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
