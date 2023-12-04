@@ -19,7 +19,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final signupFormKey = GlobalKey<FormState>();
-  bool? _isChecked = false;
+
   bool isLoading = false;
   bool fullNameEmpty = false;
   bool phoneEmpty = false;
@@ -80,7 +80,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     listener: (context, state) {
                       isLoading = false;
                       if (state is SignUpLoading) {
-                        const Center(child: CircularProgressIndicator());
+                        showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                                  content: CircularProgressIndicator(),
+                                ));
                         isLoading = true;
                       } else if (state is SignUpSuccess) {
                         isLoading = false;
@@ -110,19 +114,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Create an account',
-                style: TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 27, height: 3),
-                textAlign: TextAlign.start,
+              Center(
+                child: const Text(
+                  'Add a User',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w700, fontSize: 27, height: 3),
+                  textAlign: TextAlign.start,
+                ),
               ),
-              Text(
-                'Join us, create invitations for your upcoming events, and let\'s invite your guests together.',
-                style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 22,
-                    height: 1.5,
-                    color: dark_gray),
+              Center(
+                child: Text(
+                  'Please fill out all user information',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 22,
+                      height: 1.5,
+                      color: dark_gray),
+                ),
               ),
               const SizedBox(
                 height: 15,
@@ -212,55 +220,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       style: TextStyle(color: Colors.red, fontSize: 16),
                     )
                   : const SizedBox(),
-              Row(
-                children: [
-                  Checkbox(
-                      value: _isChecked,
-                      activeColor: btn_color,
-                      onChanged: (bool? newValue) {
-                        setState(() {
-                          _isChecked = newValue;
-                        });
-                      }),
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400),
-                      children: <TextSpan>[
-                        const TextSpan(text: 'I agree to the '),
-                        TextSpan(
-                          text: 'Terms & Conditions',
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () async {
-                              await prefs.removeToken();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginScreen()));
-                            },
-                          style: TextStyle(
-                              color: btn_color), // Specify the color here
-                        ),
-                        const TextSpan(text: ' and '),
-                        TextSpan(
-                          text: 'Privacy Policy.',
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginScreen()));
-                            },
-                          style: TextStyle(
-                              color: btn_color), // Specify the color here
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
               Button(
                   onPressed: () {
                     if (signupFormKey.currentState!.validate()) {
@@ -298,35 +257,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           email: _emailController.text)));
                     }
                   },
-                  disable: _isChecked,
-                  text: "SignUp"),
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w400),
-                    children: <TextSpan>[
-                      const TextSpan(text: 'Already have an account?'),
-                      TextSpan(
-                        text: ' Login',
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        HomeScreen(selectedIndex: 0)));
-                          },
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: btn_color), // Specify the color here
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                  text: "Register"),
             ],
           ),
         ),

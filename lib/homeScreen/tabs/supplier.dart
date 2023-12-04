@@ -52,38 +52,62 @@
 //   }
 // }
 
+import 'package:fikir_milk/const.dart';
 import 'package:fikir_milk/homeScreen/blocs/home_bloc.dart';
+import 'package:fikir_milk/homeScreen/data/homeDataSource.dart';
+import 'package:fikir_milk/homeScreen/data/models/updateSupplier.dart';
+import 'package:fikir_milk/homeScreen/tabs/update.dart';
+import 'package:fikir_milk/homeScreen/tabs/widgets/dialogBox.dart';
+import 'package:fikir_milk/sp_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fikir_milk/homeScreen/data/homeRepository.dart';
 
-class SupplierScreen extends StatelessWidget {
+class SupplierScreen extends StatefulWidget {
   final HomeRepository homeRepository;
 
   const SupplierScreen({Key? key, required this.homeRepository})
       : super(key: key);
 
   @override
+  State<SupplierScreen> createState() => _SupplierScreenState();
+}
+
+class _SupplierScreenState extends State<SupplierScreen> {
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          SupplierListBloc(homeRepository)..add(GetSupplierListEvent()),
+          SupplierListBloc(widget.homeRepository)..add(GetSupplierListEvent()),
       child: SupplierScreenContent(),
     );
   }
 }
 
 class SupplierScreenContent extends StatelessWidget {
+  final prefs = PrefService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Suppliers'),
+        backgroundColor: btn_color4,
+        elevation: 4.0,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return DialogBox();
+              });
+        },
+        child: Icon(Icons.add),
+        shape: CircleBorder(),
       ),
       body: BlocBuilder<SupplierListBloc, SupplierListState>(
         builder: (context, state) {
-          print(state); // Add this line for debugging
-
           if (state is SupplierListLoading) {
             return Center(child: CircularProgressIndicator());
           } else if (state is SupplierListSuccess) {
@@ -92,11 +116,26 @@ class SupplierScreenContent extends StatelessWidget {
             return ListView.builder(
               itemCount: suppliers.length,
               itemBuilder: (context, index) {
-                final supplier = suppliers[index];
+                final supplierData = suppliers[index];
                 return ListTile(
-                  title: Text(suppliers.sup_name),
-                  subtitle: Text(suppliers.sup_phone),
-                  // Display other details as needed
+                  title: Text(supplierData.sup_name),
+                  subtitle: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(text: supplierData.sup_phone + "\n"),
+                        TextSpan(text: supplierData.id + "\n"),
+                        TextSpan(text: supplierData.sup_address),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    prefs.addSupplierId(supplierData.id);
+                    print(supplierData.sup_name);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UpdateScreen()));
+                  },
                 );
               },
             );

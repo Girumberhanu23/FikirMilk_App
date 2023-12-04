@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 10, left: 20),
+                      padding: const EdgeInsets.only(bottom: 3, left: 20),
                       child: Image.asset("assets/logo_white.png"),
                     ),
                     Text(
@@ -81,7 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   listener: (context, state) {
                     if (state is LoginLoading) {
-                      const Center(child: CircularProgressIndicator());
+                      showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                                content: CircularProgressIndicator(),
+                              ));
                       isLoading = true;
                     } else if (state is LoginSuccess) {
                       isLoading = false;

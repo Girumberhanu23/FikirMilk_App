@@ -4,13 +4,9 @@ import '../../const.dart';
 
 class Button extends StatelessWidget {
   final VoidCallback onPressed;
-  final bool? disable;
+
   final String text;
-  const Button(
-      {super.key,
-      required this.onPressed,
-      required this.disable,
-      required this.text});
+  const Button({super.key, required this.onPressed, required this.text});
 
   double getRelativeWidth(BuildContext context, double fraction) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -23,7 +19,7 @@ class Button extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(top: 50, bottom: 30),
         child: ElevatedButton(
-          onPressed: disable as bool ? onPressed : null,
+          onPressed: onPressed,
           style: ElevatedButton.styleFrom(
               primary: btn_color,
               padding: EdgeInsets.symmetric(

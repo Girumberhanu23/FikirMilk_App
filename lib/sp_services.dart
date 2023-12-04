@@ -44,9 +44,19 @@ class PrefService {
     return cache;
   }
 
-  Future addSupplier(String supplierName) async {
+  // Future addSupplier(String supplierName) async {
+  //   SharedPreferences _preferences = await SharedPreferences.getInstance();
+  //   _preferences.setString("supplierName", supplierName);
+  // }
+  Future addSupplierId(String supplierId) async {
     SharedPreferences _preferences = await SharedPreferences.getInstance();
-    _preferences.setString("supplierName", supplierName);
+    _preferences.setString("SupplierId", supplierId);
+  }
+
+  Future getSupplierId() async {
+    SharedPreferences _preferences = await SharedPreferences.getInstance();
+    var cache = _preferences.getString("SupplierId");
+    return cache;
   }
 
   Future readAddedESupplier() async {
