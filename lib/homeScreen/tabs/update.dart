@@ -125,6 +125,46 @@ class UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           ),
+          SizedBox(
+            height: 10,
+          ),
+          BlocConsumer<DeleteSupplierBloc, DeleteSupplierState>(
+            listener: (_, state) {
+              print(state);
+              if (state is DeleteSupplierLoading) {
+                showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                          content: CircularProgressIndicator(),
+                        ));
+              } else if (state is DeleteSupplierSuccess) {
+                print("Successfully Deleted Supplier!");
+              } else if (state is DeleteSupplierFailure) {
+                print('Failed to delete supplier: ${state.error}');
+                // Handle the failure state appropriately (e.g., show error message to the user)
+              }
+            },
+            builder: (context, state) {
+              return ElevatedButton(
+                onPressed: () async {
+                  final deleteSupplier =
+                      BlocProvider.of<DeleteSupplierBloc>(context);
+                  deleteSupplier
+                      .add(OnDeleteSupplierEvent(await prefs.getSupplierId()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, // Set delete button color
+                ),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     ));

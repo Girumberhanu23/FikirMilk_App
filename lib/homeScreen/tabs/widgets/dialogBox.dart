@@ -145,7 +145,7 @@ class _DialogBoxState extends State<DialogBox> {
                         sup_address: _supAddressController.text,
                         amount: _amountController.text,
                         price: _priceController.text,
-                        picture: _selectedImage.toString())));
+                        picture: _selectedImage!)));
                     // Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(

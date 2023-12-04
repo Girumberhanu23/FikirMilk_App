@@ -136,6 +136,16 @@ class SupplierScreenContent extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) => UpdateScreen()));
                   },
+                  onLongPress: () {
+                    prefs.addSupplierId(supplierData.id);
+                    print(supplierData.sup_name);
+                    AlertDialog(
+                      backgroundColor: Colors.purple[300],
+                      content: Container(
+                        child: Text('Delete'),
+                      ),
+                    );
+                  },
                 );
               },
             );

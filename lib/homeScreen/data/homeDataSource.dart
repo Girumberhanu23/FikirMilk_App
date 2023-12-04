@@ -42,7 +42,60 @@ class HomeDataSource {
     }
   }
 
-  Future createSupplier(CreateSupplier createSupplier) async {
+  // Future createSupplier(CreateSupplier createSupplier) async {
+  //   var token = await prefs.readToken();
+  //   var userId = await prefs.getUserId();
+  //   var headersList = {
+  //     'Accept': '*/*',
+  //     'x-api-key': apiKey,
+  //     'Authorization': 'Bearer $token'
+  //   };
+
+  //   var request =
+  //       http.MultipartRequest('POST', Uri.parse('${baseUrl}/api/v1/supply'));
+  //   request.headers.addAll(headersList);
+
+  //   request.fields.addAll({
+  //     "sup_name": createSupplier.sup_name,
+  //     "sup_phone": createSupplier.sup_phone,
+  //     "sup_address": createSupplier.sup_address,
+  //     "tested_by": userId,
+  //     "amount": createSupplier.amount,
+  //     "price": createSupplier.price,
+  //   });
+
+  //   // File object representing the image
+  //   File imageFile = createSupplier.picture;
+
+  //   // Attach the image file to the request
+  //   request.files.add(
+  //     await http.MultipartFile.fromPath('picture', imageFile.path),
+  //   );
+
+  //   try {
+  //     final streamedResponse = await request.send();
+  //     final response = await http.Response.fromStream(streamedResponse);
+
+  //     if (response.statusCode == 200) {
+  //       final responseBody = await response.body;
+  //       final data = json.decode(responseBody);
+
+  //       if (data["status"] == "SUCCESS") {
+  //         print(responseBody);
+  //       } else {
+  //         print(responseBody);
+  //         throw data["message"];
+  //       }
+  //     } else {
+  //       throw 'Failed to upload image. Status code: ${response.statusCode}';
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     throw e;
+  //   }
+  // }
+
+  Future<void> createSupplier(CreateSupplier createSupplier) async {
     var token = await prefs.readToken();
     var userId = await prefs.getUserId();
     var headersList = {
@@ -51,40 +104,57 @@ class HomeDataSource {
       'Authorization': 'Bearer $token'
     };
 
-    var uri = Uri.parse('${baseUrl}/api/v1/supply');
+    // Create a multipart request
+    var request =
+        http.MultipartRequest('POST', Uri.parse('${baseUrl}/api/v1/supply'));
 
-    Map<String, dynamic> body;
+    // Add headers to the request
+    request.headers.addAll(headersList);
 
-    body = {
+    // Add fields to the request
+    request.fields.addAll({
       "sup_name": createSupplier.sup_name,
       "sup_phone": createSupplier.sup_phone,
       "sup_address": createSupplier.sup_address,
       "tested_by": userId,
       "amount": createSupplier.amount,
       "price": createSupplier.price,
-      "picture": createSupplier.picture,
-    };
-    // body = {
-    //   "sup_name": "Abebe Kebede",
-    //   "sup_phone": "0923938609",
-    //   "sup_address": "Sarris",
-    //   "tested_by": userId,
-    //   "amount": "40",
-    //   "price": "2000",
-    //   "picture": "/C:/Users/leint/Music/game_math_arithmetic.png",
-    // };
+      "picture": createSupplier.picture.toString(),
+    });
 
-    var response = await http.post(uri, headers: headersList, body: body);
-    final responseBody = response.body;
+    // Get the image file (createSupplier.picture) from File object
+    var imageFile = createSupplier.picture;
+    print("+++++++++++++++++++++++++++");
+    // Attach the image file to the request
+    var fileStream = http.ByteStream(imageFile.openRead());
+    var length = await imageFile.length();
+    var multipartFile = http.MultipartFile(
+      'picture',
+      fileStream,
+      length,
+      filename: imageFile.path.split('/').last,
+    );
 
-    final data = json.decode(responseBody);
+    // Add the image file to the request
+    request.files.add(multipartFile);
+    print("000000000000000000000000");
 
     try {
-      if (data["status"] == "SUCCESS") {
-        print(responseBody);
+      // Send the request
+      var response = await http.Response.fromStream(await request.send());
+
+      if (response.statusCode == 200) {
+        final responseBody = response.body;
+        final data = json.decode(responseBody);
+
+        if (data["status"] == "SUCCESS") {
+          print(responseBody);
+        } else {
+          print(responseBody);
+          throw data["message"];
+        }
       } else {
-        print(responseBody);
-        throw data["message"];
+        throw 'Failed to create supplier. Status code: ${response.statusCode}';
       }
     } catch (e) {
       print(e);
@@ -126,6 +196,7 @@ class HomeDataSource {
         print("Supplier Updated Successfully!");
         // Handle successful response if needed
       } else {
+        print(data["message"]);
         print('Failed to update supplier. Status code: ${response.statusCode}');
         throw Exception('Failed to update supplier');
       }
@@ -135,22 +206,30 @@ class HomeDataSource {
     }
   }
 
-  Future deleteSupplier(String? deleteId) async {
-    var headers = {
-      'Authorization':
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTFjMTVkZjkyMjRjZTExYmE0NjY4MyIsImlhdCI6MTcwMTI2ODgzMCwiZXhwIjoxNzAyNTY0ODMwfQ.rJScaZCFqr4zATKNUoV0vRvUdRO7_MEu_FYk4DCnds0'
-    };
-    var request = http.Request('DELETE',
-        Uri.parse('https://fikirapi.onrender.com/api/v1/supply/${deleteId}'));
+  Future<void> deleteSupplier(String? deleteId) async {
+    var token = await prefs.readToken();
+    try {
+      var headers = {
+        'x-api-key': apiKey,
+        'Authorization': 'Bearer $token',
+      };
+      var response = await http.delete(
+        Uri.parse('https://fikirapi.onrender.com/api/v1/supply/$deleteId'),
+        headers: headers,
+      );
+      final responseBody = response.body;
 
-    request.headers.addAll(headers);
+      final data = json.decode(responseBody);
 
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
-    } else {
-      print(response.reasonPhrase);
+      if (response.statusCode == 200) {
+        print("Successfully Deleted");
+      } else {
+        print(data["message"]);
+        print('Failed to delete supplier: ${response.reasonPhrase}');
+        throw Exception('Failed to delete supplier: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete supplier: $e');
     }
   }
 }

@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
   final loginRepository = LoginRepository(LoginDataSource());
   final createSupplierRepository = HomeRepository(HomeDataSource());
   final updateSupplierRepository = HomeRepository(HomeDataSource());
+  final deleteSupplierRepository = HomeRepository(HomeDataSource());
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,8 @@ class MyApp extends StatelessWidget {
             create: (_) => CreateSupplierBloc(createSupplierRepository)),
         BlocProvider(
             create: (_) => UpdateSupplierBloc(updateSupplierRepository)),
+        BlocProvider(
+            create: (_) => DeleteSupplierBloc(deleteSupplierRepository)),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
