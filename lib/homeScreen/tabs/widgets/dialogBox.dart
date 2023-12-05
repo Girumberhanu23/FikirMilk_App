@@ -4,6 +4,7 @@ import 'package:fikir_milk/auth/widgets/textfield.dart';
 import 'package:fikir_milk/homeScreen/blocs/home_bloc.dart';
 import 'package:fikir_milk/homeScreen/data/models/createSupplier.dart';
 import 'package:fikir_milk/homeScreen/tabs/home.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,6 +24,12 @@ class _DialogBoxState extends State<DialogBox> {
   // TextEditingController _testerController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
+
+  String? contentType;
+  File? _pickedImage;
+  Uint8List selectedWebImage = Uint8List(8);
+
+  String _imagePath = "";
 
   @override
   void dispose() {
@@ -137,6 +144,7 @@ class _DialogBoxState extends State<DialogBox> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+
                     final addSupplier =
                         BlocProvider.of<CreateSupplierBloc>(context);
                     addSupplier.add(PostSupplierEvent(CreateSupplier(
@@ -145,7 +153,7 @@ class _DialogBoxState extends State<DialogBox> {
                         sup_address: _supAddressController.text,
                         amount: _amountController.text,
                         price: _priceController.text,
-                        picture: _selectedImage!)));
+                        picture: _imagePath)));
                     // Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
@@ -170,13 +178,20 @@ class _DialogBoxState extends State<DialogBox> {
     );
   }
 
-  Future _pickImage() async {
-    final returnedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> _pickImage() async {
 
-    if (returnedImage == null) return;
-    setState(() {
-      _selectedImage = File(returnedImage!.path);
-    });
+    try{
+      final picker = ImagePicker();
+      final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        setState(() {
+          _imagePath = pickedFile.path;
+        });
+      }
+    } catch(e){
+      print(e);
+    }
+
   }
 }

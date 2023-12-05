@@ -7,7 +7,7 @@ class CreateSupplier {
   final String? tested_by;
   final String amount;
   final String price;
-  final File picture;
+  final String picture;
 
   CreateSupplier(
       {required this.sup_name,

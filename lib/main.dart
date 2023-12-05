@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
         title: 'Fikir Milk',
         theme: ThemeData(fontFamily: 'Poppins'),
         home: HomeScreen(selectedIndex: 0),
+        // home: LoginScreen(),
       ),
     );
   }

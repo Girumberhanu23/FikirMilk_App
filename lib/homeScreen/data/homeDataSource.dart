@@ -98,6 +98,8 @@ class HomeDataSource {
   Future<void> createSupplier(CreateSupplier createSupplier) async {
     var token = await prefs.readToken();
     var userId = await prefs.getUserId();
+
+    try {
     var headersList = {
       'Accept': '*/*',
       'x-api-key': apiKey,
@@ -106,10 +108,7 @@ class HomeDataSource {
 
     // Create a multipart request
     var request =
-        http.MultipartRequest('POST', Uri.parse('${baseUrl}/api/v1/supply'));
-
-    // Add headers to the request
-    request.headers.addAll(headersList);
+        http.MultipartRequest('POST', Uri.parse('$baseUrl/api/v1/supply'));
 
     // Add fields to the request
     request.fields.addAll({
@@ -118,41 +117,17 @@ class HomeDataSource {
       "sup_address": createSupplier.sup_address,
       "tested_by": userId,
       "amount": createSupplier.amount,
-      "price": createSupplier.price,
-      "picture": createSupplier.picture.toString(),
+      "price": createSupplier.price
     });
 
-    // Get the image file (createSupplier.picture) from File object
-    var imageFile = createSupplier.picture;
-    print("+++++++++++++++++++++++++++");
-    // Attach the image file to the request
-    var fileStream = http.ByteStream(imageFile.openRead());
-    var length = await imageFile.length();
-    var multipartFile = http.MultipartFile(
-      'picture',
-      fileStream,
-      length,
-      filename: imageFile.path.split('/').last,
-    );
+    request.files.add(await http.MultipartFile.fromPath('picture', createSupplier.picture));
+    request.headers.addAll(headersList);
 
-    // Add the image file to the request
-    request.files.add(multipartFile);
-    print("000000000000000000000000");
-
-    try {
-      // Send the request
-      var response = await http.Response.fromStream(await request.send());
+    http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
-        final responseBody = response.body;
-        final data = json.decode(responseBody);
-
-        if (data["status"] == "SUCCESS") {
-          print(responseBody);
-        } else {
-          print(responseBody);
-          throw data["message"];
-        }
+        print("Success");
+        print(await response.stream.bytesToString());
       } else {
         throw 'Failed to create supplier. Status code: ${response.statusCode}';
       }
